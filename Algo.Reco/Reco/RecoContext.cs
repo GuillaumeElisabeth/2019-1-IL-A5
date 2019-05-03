@@ -32,12 +32,40 @@ namespace Algo
         public double SimilarityPearson( User u1, User u2 )
         {
             // This should call the "real" one below.
-            throw new NotImplementedException();
+            var communMovie = u1.Ratings.Keys.Intersect( u2.Ratings.Keys );
+            List<ValueTuple<int,int>> communRatings = new List<ValueTuple<int , int >>();
+            foreach(var movie in communMovie )
+            {
+                u1.Ratings.TryGetValue( movie, out var rate1 );
+                u2.Ratings.TryGetValue( movie, out var rate2 );
+                communRatings.Add( new ValueTuple<int, int>(rate1, rate2) );
+            }
+
+            return SimilarityPearson( communRatings );
         }
 
         public double SimilarityPearson( IEnumerable<(int x, int y)> values )
         {
-            throw new NotImplementedException();
+            double SumX = 0.0;
+            double SumY = 0.0;
+            double SumXMultY = 0.0;
+            double SumX2 = 0.0;
+            double SumY2 = 0.0;
+
+            foreach(var (x, y) in values )
+            {
+                SumX += x;
+                SumY += y;
+                SumXMultY += x * y;
+                SumX2 += x*x;
+                SumY2 += y*y;
+            }
+
+            double a = SumXMultY - ((SumX * SumY) / values.Count());
+            double b = (SumX2 - ((SumX * SumX) / values.Count())) * (SumY2 - ((SumY * SumY) / values.Count()));
+            b = Math.Sqrt( b );
+
+            return a / b;
         }
 
         public bool LoadFrom( string folder )
